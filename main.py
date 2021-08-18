@@ -12,12 +12,15 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
-    await message.reply("Привет\nНапиши мне что-нибудь!")
+    await bot.send_message(message.from_user.id, "Привет!\n Напиши мне что-нибудь.")
+    # await message.reply("Привет\nНапиши мне что-нибудь!") \
+    # reply - отправляет сообщение пользователя с пересылкой сообщения
+    # send_message - отправка обычного сообщения
 
 
 @dp.message_handler(commands=['help'])
 async def process_help_command(message: types.Message):
-    await message.reply("Напиши мне что-нибудь")
+    await bot.send_message(message.from_user.id, "Напиши мне что-нибудь")
 
 
 @dp.message_handler()  # Пустые скобки = обработка текста
