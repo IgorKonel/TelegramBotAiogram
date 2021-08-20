@@ -9,6 +9,8 @@ from config import TOKEN
 
 import qrcode
 
+import os
+
 from random import randint as ran
 
 qr = qrcode.QRCode(
@@ -50,6 +52,10 @@ async def process_help_command(message: types.Message):
     img.save("QR_img\\" + name_file)
 
     print("QR code created")
+
+    # path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "QR_img\\" + name_file)
+    # os.remove(path)
+    # print('Image has been deleted')
 
 
 @dp.message_handler()  # Пустые скобки = обработка текста
