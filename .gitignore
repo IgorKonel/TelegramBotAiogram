@@ -1,2 +1,4 @@
 venv
 .idea
+QR_img/*
+!.gitkeep
