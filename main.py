@@ -24,6 +24,26 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
+def create_qr(message):
+    # TODO: Реализовать отправку str_code в базу данных
+    print(type(str(message.from_user.id)))
+    str_code = str(ran(100, 999)) + str(message.from_user.id) + str(ran(100, 999))
+    print(str_code)
+    qr.add_data(str_code)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    name_file = str_code + ".png"
+    print("Name file =", name_file)
+    img.save("QR_img\\" + name_file)
+
+    print("QR code created")
+
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "QR_img\\" + name_file)
+    os.remove(path)
+    print('Image has been deleted')
+
+
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     await bot.send_message(message.from_user.id, "Привет!\n Напиши мне что-нибудь.")
@@ -40,22 +60,7 @@ async def process_help_command(message: types.Message):
 @dp.message_handler(commands=['qr'])
 async def process_help_command(message: types.Message):
     await bot.send_message(message.from_user.id, "Здесь будет реализована функция, которая будет создавать qr код")
-    print(type(str(message.from_user.id)))
-    str_code = str(ran(100, 999)) + str(message.from_user.id) + str(ran(100, 999))
-    print(str_code)
-    qr.add_data(str_code)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-
-    name_file = str_code + ".png"
-    print("Name file =", name_file)
-    img.save("QR_img\\" + name_file)
-
-    print("QR code created")
-
-    # path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "QR_img\\" + name_file)
-    # os.remove(path)
-    # print('Image has been deleted')
+    create_QR(message)
 
 
 @dp.message_handler()  # Пустые скобки = обработка текста
