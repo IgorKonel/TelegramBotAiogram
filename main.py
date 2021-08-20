@@ -9,6 +9,8 @@ from config import TOKEN
 
 import qrcode
 
+from random import randint as ran
+
 qr = qrcode.QRCode(
     version=1,
     error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -36,10 +38,17 @@ async def process_help_command(message: types.Message):
 @dp.message_handler(commands=['qr'])
 async def process_help_command(message: types.Message):
     await bot.send_message(message.from_user.id, "Здесь будет реализована функция, которая будет создавать qr код")
-    qr.add_data('Q')
+    print(type(str(message.from_user.id)))
+    str_code = str(ran(100, 999)) + str(message.from_user.id) + str(ran(100, 999))
+    print(str_code)
+    qr.add_data(str_code)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
-    img.save("QR.png")
+
+    name_file = str_code + ".png"
+    print("Name file =", name_file)
+    img.save("QR_img\\" + name_file)
+
     print("QR code created")
 
 
