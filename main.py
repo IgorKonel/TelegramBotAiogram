@@ -1,10 +1,20 @@
 # pip install -U aiogram
+# pip install qrcode[pil]
 
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 
 from config import TOKEN
+
+import qrcode
+
+qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=100,
+    border=4,
+)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -21,6 +31,16 @@ async def process_start_command(message: types.Message):
 @dp.message_handler(commands=['help'])
 async def process_help_command(message: types.Message):
     await bot.send_message(message.from_user.id, "Напиши мне что-нибудь")
+
+
+@dp.message_handler(commands=['qr'])
+async def process_help_command(message: types.Message):
+    await bot.send_message(message.from_user.id, "Здесь будет реализована функция, которая будет создавать qr код")
+    qr.add_data('Q')
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save("QR.png")
+    print("QR code created")
 
 
 @dp.message_handler()  # Пустые скобки = обработка текста
