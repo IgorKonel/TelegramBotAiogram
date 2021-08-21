@@ -6,6 +6,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 
 from config import TOKEN
+import json
 
 import qrcode
 
@@ -53,6 +54,17 @@ async def create_qr(bot, message):
     print('Image has been deleted')
 
 
+async def read_and_write_json(id_user, str_code):
+    # Открываем data_base.json
+    with open('data_base.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        data[str(id_user)] = str_code
+
+    with open('data_base.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(data, ensure_ascii=False, indent=4))
+    print(data)
+
+
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
     await bot.send_message(message.from_user.id, "Привет!\n Напиши мне что-нибудь.")
@@ -64,6 +76,11 @@ async def process_start_command(message: types.Message):
 @dp.message_handler(commands=['help'])
 async def process_help_command(message: types.Message):
     await bot.send_message(message.from_user.id, "Напиши мне что-нибудь")
+
+
+@dp.message_handler(commands=['json'])
+async def process_help_command(message: types.Message):
+    await read_and_write_json(message.from_user.id + 2, '34234dsd')
 
 
 @dp.message_handler(commands=['qr'])
