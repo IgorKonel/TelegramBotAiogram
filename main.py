@@ -24,22 +24,31 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
-def create_qr(message):
+async def create_qr(bot, message):
     # TODO: Реализовать отправку str_code в базу данных
     print(type(str(message.from_user.id)))
     str_code = str(ran(100, 999)) + str(message.from_user.id) + str(ran(100, 999))
-    print(str_code)
+    print(str_code)  # Уникальный код для пользователя
     qr.add_data(str_code)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
 
-    name_file = str_code + ".png"
+    name_file = str_code + ".png"  # Имя файла
     print("Name file =", name_file)
-    img.save("QR_img\\" + name_file)
+    path_img = "QR_img\\" + name_file  # Полный путь к картинки
+    img.save(path_img)
 
     print("QR code created")
 
-    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "QR_img\\" + name_file)
+    await bot.send_message(message.from_user.id, 'Ваш QR-код на скидку')
+    with open(path_img, 'rb') as photo:
+        await bot.send_photo(
+            message.from_user.id, photo
+        )
+    await bot.send_message(message.from_user.id, 'Покажи его администратору на стойке в начале посещения, чтобы '
+                                                 'активировать скидку.')
+
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), path_img)
     os.remove(path)
     print('Image has been deleted')
 
@@ -59,8 +68,8 @@ async def process_help_command(message: types.Message):
 
 @dp.message_handler(commands=['qr'])
 async def process_help_command(message: types.Message):
-    await bot.send_message(message.from_user.id, "Здесь будет реализована функция, которая будет создавать qr код")
-    create_QR(message)
+    # await bot.send_message(message.from_user.id, "Здесь будет реализована функция, которая будет создавать qr код")
+    await create_qr(bot, message)
 
 
 @dp.message_handler()  # Пустые скобки = обработка текста
