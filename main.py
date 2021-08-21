@@ -14,6 +14,8 @@ import os
 
 from random import randint as ran
 
+WOODEN_ID = 779713521
+
 qr = qrcode.QRCode(
     version=1,
     error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -25,7 +27,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
-async def create_qr(bot, message):
+async def create_qr(message):
     # TODO: Реализовать отправку str_code в базу данных
     print(type(str(message.from_user.id)))
     str_code = str(ran(100, 999)) + str(message.from_user.id) + str(ran(100, 999))
@@ -40,6 +42,10 @@ async def create_qr(bot, message):
     img.save(path_img)
 
     print("QR code created")
+
+    await read_and_write_json(message.from_user.id, str_code)  # Записываем в JSON id пользователя и код скидки
+
+    print("User data recorded")
 
     await bot.send_message(message.from_user.id, 'Ваш QR-код на скидку')
     with open(path_img, 'rb') as photo:
@@ -67,10 +73,19 @@ async def read_and_write_json(id_user, str_code):
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
-    await bot.send_message(message.from_user.id, "Привет!\n Напиши мне что-нибудь.")
-    # await message.reply("Привет\nНапиши мне что-нибудь!") \
-    # reply - отправляет сообщение пользователя с пересылкой сообщения
-    # send_message - отправка обычного сообщения
+    with open('data_base.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    if str(message.from_user.id) in data:
+        await bot.send_message(message.from_user.id, "Ты уже проходил опрос.\n"
+                                                     "Попробуй снова через 2 недели")
+    else:
+        await bot.send_message(message.from_user.id, "Привет!\n"
+                                                     "Я - бот опросник WoodenDoor\n"
+                                                     "Ответь на пару простых вопросов и получи скидку!")
+        # await message.reply("Привет\nНапиши мне что-нибудь!") \
+        # reply - отправляет сообщение пользователя с пересылкой сообщения
+        # send_message - отправка обычного сообщения
 
 
 @dp.message_handler(commands=['help'])
@@ -86,7 +101,7 @@ async def process_help_command(message: types.Message):
 @dp.message_handler(commands=['qr'])
 async def process_help_command(message: types.Message):
     # await bot.send_message(message.from_user.id, "Здесь будет реализована функция, которая будет создавать qr код")
-    await create_qr(bot, message)
+    await create_qr(message)
 
 
 @dp.message_handler()  # Пустые скобки = обработка текста
